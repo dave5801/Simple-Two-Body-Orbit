@@ -39,5 +39,6 @@ if __name__ == '__main__':
     b = a * np.sqrt(1 - e**2)  # Semi-minor axis
     # Create an instance of the Orbit class
     orbit = Orbit(semi_major_axis=a, eccentricity=e)
+    orbit.plot_orbit(num_points=1000)
 
     print("Simple two-body orbit simulation completed.")
