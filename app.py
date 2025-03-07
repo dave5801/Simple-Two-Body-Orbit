@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)  # Create a Flask app instance
 
@@ -6,13 +6,9 @@ app = Flask(__name__)  # Create a Flask app instance
 def home():
     return render_template('index.html')
 
-@app.route('/hello')  # Define another route
-def hello():
-    return "Hello, World!"
-
-@app.route("/clicked")
-def button_clicked():
-    return "You clicked the button!"
+@app.route("/button_click", methods=["POST"])
+def button_click():
+    return jsonify({"message": "Button Clicked! Data sent to Flask!"})
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run the Flask app in debug mode
