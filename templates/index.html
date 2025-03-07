@@ -4,13 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask Button Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome to My Flask App</h1>
     
-    <!-- Button -->
-    <form action="/clicked" method="get">
-        <button type="submit">Click Me!</button>
-    </form>
+    <!-- Button with JavaScript -->
+    <button onclick="showMessage()">Click Me!</button>
+
+    <!-- Placeholder for the message -->
+    <p id="message"></p>
+
+    <script>
+        function showMessage() {
+            document.getElementById("message").innerText = "Button Clicked!";
+        }
+    </script>
 </body>
 </html>
