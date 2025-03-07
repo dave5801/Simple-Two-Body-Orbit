@@ -1,18 +1,44 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
-app = Flask(__name__)  # Create a Flask app instance
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///clicks.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-@app.route('/')  # Define a route for the home page
+db = SQLAlchemy(app)
+
+# Define Database Model
+class Click(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+# Create Database Tables
+with app.app_context():
+    db.create_all()
+
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/hello')  # Define another route
-def hello():
-    return "Hello, World!"
+@app.route("/button_click", methods=["POST"])
+def button_click():
+    data = request.get_json()
+    name = data.get("name", "Anonymous")
 
-@app.route("/clicked")
-def button_clicked():
-    return "You clicked the button!"
+    # Store the click in the database
+    new_click = Click(name=name)
+    db.session.add(new_click)
+    db.session.commit()
 
-if __name__ == '__main__':
-    app.run(debug=True)  # Run the Flask app in debug mode
+    return jsonify({"message": f"Button clicked by {name}!"})
+
+@app.route("/clicks")
+def get_clicks():
+    clicks = Click.query.all()
+    click_list = [{"id": c.id, "name": c.name, "timestamp": c.timestamp.strftime("%Y-%m-%d %H:%M:%S")} for c in clicks]
+    return jsonify(click_list)
+
+if __name__ == "__main__":
+    app.run(debug=True)
