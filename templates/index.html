@@ -1,84 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Button with Database</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        input {
-            padding: 8px;
-            margin-right: 10px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Flask Hello World</title>
 </head>
 <body>
-    <h1>Welcome to My Flask App</h1>
-    
-    <!-- Input field to take user name -->
-    <input type="text" id="nameInput" placeholder="Enter your name">
-    <button onclick="sendData()">Click Me!</button>
-
-    <!-- Response message -->
-    <p id="response"></p>
-
-    <!-- Display Click History -->
-    <h2>Click History</h2>
-    <ul id="clickList"></ul>
-
-    <script>
-        function sendData() {
-            let name = document.getElementById("nameInput").value || "Anonymous";
-
-            fetch("/button_click", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ name: name })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("response").innerText = data.message;
-                fetchClicks();
-            })
-            .catch(error => console.error("Error:", error));
-        }
-
-        function fetchClicks() {
-            fetch("/clicks")
-            .then(response => response.json())
-            .then(data => {
-                let clickList = document.getElementById("clickList");
-                clickList.innerHTML = "";
-                data.forEach(click => {
-                    let li = document.createElement("li");
-                    li.textContent = `${click.name} clicked at ${click.timestamp}`;
-                    clickList.appendChild(li);
-                });
-            })
-            .catch(error => console.error("Error:", error));
-        }
-
-        // Fetch previous clicks on page load
-        fetchClicks();
-    </script>
+    <h1>Hello, World!</h1>
 </body>
 </html>

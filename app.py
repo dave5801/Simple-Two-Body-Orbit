@@ -1,44 +1,34 @@
-from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from flask import Flask, request, jsonify
+import tensorflow as tf
+import numpy as np
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///clicks.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
-
-# Define Database Model
-class Click(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-# Create Database Tables
-with app.app_context():
-    db.create_all()
+# Load the trained model
+model = tf.keras.models.load_model("model.h5")
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return "Welcome to the Orbit Prediction API!"
 
-@app.route("/button_click", methods=["POST"])
-def button_click():
-    data = request.get_json()
-    name = data.get("name", "Anonymous")
+@app.route("/predict", methods=["GET"])
+def predict():
+    try:
+        # Get 'time' parameter from the URL query string (e.g., /predict?time=105)
+        time_value = float(request.args.get("time"))
 
-    # Store the click in the database
-    new_click = Click(name=name)
-    db.session.add(new_click)
-    db.session.commit()
+        # Convert input to a NumPy array for model prediction
+        input_data = np.array([[time_value]])
 
-    return jsonify({"message": f"Button clicked by {name}!"})
+        # Predict the orbital position
+        predicted_position = model.predict(input_data)[0][0]
 
-@app.route("/clicks")
-def get_clicks():
-    clicks = Click.query.all()
-    click_list = [{"id": c.id, "name": c.name, "timestamp": c.timestamp.strftime("%Y-%m-%d %H:%M:%S")} for c in clicks]
-    return jsonify(click_list)
+        # Return the prediction as JSON
+        return jsonify({"time": time_value, "predicted_position": float(predicted_position)})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 if __name__ == "__main__":
     app.run(debug=True)
+
