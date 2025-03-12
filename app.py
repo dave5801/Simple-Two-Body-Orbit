@@ -24,7 +24,7 @@ def predict():
         predicted_position = model.predict(input_data)[0][0]
 
         # Return the prediction as JSON
-        return jsonify({"time": time_value, "predicted_position": float(predicted_position)})
+        return jsonify({"time (seconds)": time_value, "predicted_position (km)": float(predicted_position)})
     
     except Exception as e:
         return jsonify({"error": str(e)})
