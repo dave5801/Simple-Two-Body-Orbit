@@ -4,31 +4,37 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Load the trained model
-model = tf.keras.models.load_model("model.h5")
+# Load trained model
+model = tf.keras.models.load_model("orbit_model.h5")
 
 @app.route("/")
 def home():
-    return "Welcome to the Orbit Prediction API!"
+    return "Welcome to the Orbital Prediction API!"
 
 @app.route("/predict", methods=["GET"])
 def predict():
     try:
-        # Get 'time' parameter from the URL query string (e.g., /predict?time=105)
+        # Get time input from query string
         time_value = float(request.args.get("time"))
 
-        # Convert input to a NumPy array for model prediction
+        # Convert input to NumPy array for prediction
         input_data = np.array([[time_value]])
 
-        # Predict the orbital position
-        predicted_position = model.predict(input_data)[0][0]
+        # Predict (X, Y) position in km
+        predicted_position = model.predict(input_data)[0]
 
-        # Return the prediction as JSON
-        return jsonify({"time": time_value, "predicted_position": float(predicted_position)})
-    
+        # Convert to Python float for JSON serialization
+        x_km = float(predicted_position[0])
+        y_km = float(predicted_position[1])
+
+        return jsonify({
+            "time (seconds)": time_value,
+            "predicted_x (km)": x_km,
+            "predicted_y (km)": y_km
+        })
+
     except Exception as e:
         return jsonify({"error": str(e)})
 
 if __name__ == "__main__":
     app.run(debug=True)
-
