@@ -1,8 +1,11 @@
+import matplotlib
+matplotlib.use('Agg')  # Set non-GUI backend before importing pyplot
+import matplotlib.pyplot as plt
 from flask import Flask, request, jsonify, send_file
 import tensorflow as tf
 import numpy as np
-import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import os  # Import os to handle file directories
 
 app = Flask(__name__)
 
@@ -40,6 +43,12 @@ def predict():
 @app.route("/orbit_plot", methods=["GET"])
 def orbit_plot():
     try:
+
+        # Ensure the 'static' directory exists
+        static_dir = "static"
+        if not os.path.exists(static_dir):
+            os.makedirs(static_dir)  # Create 'static' directory if missing
+
         # Generate orbit points
         time_steps = np.linspace(0, 5800, num=300)  # Covering one full orbit
         input_data = time_steps.reshape(-1, 1)
